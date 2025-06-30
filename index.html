@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог салатов Цезарь</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=Roboto+Slab:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Общие стили */
+        body {
+            font-family:'Open Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            font-family: 'Roboto Slab', Georgia, serif;
+            font-weight: 600;
+            color: #4CAF50;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: url('https://i.pinimg.com/originals/02/99/02/0299026ae1a0156e20f94b05c6079312.jpg') no-repeat center center;
+            background-size: cover;
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        /* Стили для фильтров */
+        .filters {
+            background: #e7e7e7;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .filters h2 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .filter-group {
+            margin-bottom: 10px;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .filter-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ececec;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        #reset-filters {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        #reset-filters:hover {
+            background-color: #4ef039;
+        }
+        
+        /* Стили для карточек салатов */
+        .salads-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .salad-card {
+            border: 1px solid #e4e3e3;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .salad-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .salad-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .salad-info {
+            padding: 15px;
+        }
+        
+        .salad-info h3 {
+            margin: 0 0 10px;
+            color: #2c3e50;
+        }
+        
+        .salad-info p {
+            margin: 0 0 15px;
+            color: #7f8c8d;
+        }
+        
+        .order-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        
+        .order-btn:hover {
+            background-color: #4CAF50;
+        }
+        
+        /* Стили для модального окна */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #555;
+        }
+        
+        .modal-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .modal-header {
+            text-align: center;
+            position: relative;
+        }
+        
+        .modal-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        #salad-map {
+            height: 300px;
+            width: 100%;
+            border-radius: 8px;
+        }
+        
+        .order-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .form-group label {
+            font-weight: bold;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+        
+        /* Стили для блока времени */
+        .current-time {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 1.1em;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .time-icon {
+            margin-right: 8px;
+            color: #4CAF50;
+        }
+
+        /* Стили для информации о питательной ценности */
+        .nutrition-info {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .nutrition-item {
+            text-align: center;
+            padding: 5px 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+        }
+        
+        .nutrition-value {
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        
+        .nutrition-label {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        /* Сообщения о загрузке и отсутствии результатов */
+        .loading, .no-results {
+            text-align: center;
+            padding: 30px;
+            grid-column: 1 / -1;
+        }
+        
+        .loading i, .no-results i {
+            font-size: 2em;
+            margin-bottom: 15px;
+            color: #4CAF50;
+        }
+        
+        @media (max-width: 768px) {
+            .modal-body {
+                grid-template-columns: 1fr;
+            }
+            
+            .current-time {
+                position: static;
+                margin: 10px auto;
+                text-align: center;
+                width: fit-content;
+            }
+            
+            .salads-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* Стили для подвала */
+.footer {
+    background: #4CAF50;
+    color: white;
+    text-align: center;
+    padding: 5px 0;
+    margin-top: 30px;
+}
+
+.footer p {
+    margin: 0;
+}
+    </style>
+</head>
+<body>
+    <!-- Блок текущего времени -->
+    <div class="current-time">
+        <i class="fas fa-clock time-icon"></i>
+        <span id="barnaul-time"></span>
+    </div>
+
+    <header class="header">
+        <div class="container">
+            <h1 style="font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.5), 4px 4px 6px rgba(0,0,0,0.3), 0 0 10px rgba(0,0,0,0.2);"><i class="fas fa-leaf"></i> Лучшие салаты Цезарь в городе Барнаул</h1>
+            <p style="font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.5), 2px 2px 4px rgba(0,0,0,0.3);">Найдите идеальный вариант по вашим предпочтениям</p>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <section class="filters" style="
+    border: 1px solid #4CAF50;
+    border-radius: 5px;
+    padding: 15px;
+    background: #fff;
+    box-shadow: 
+        0 4px 8px rgba(0, 0, 0, 0.1),
+        0 6px 20px rgba(0, 0, 0, 0.1),
+        inset 0 0 10px rgba(76, 175, 80, 0.2);
+    position: relative;
+">
+    <h2 style="
+        margin-top: 0;
+        color: #2E7D32;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    ">Меню</h2>
+    
+    <div class="filter-grid" style="
+        display: grid;
+        gap: 15px;
+        margin-bottom: 15px;
+    ">
+        <div class="filter-group" style="
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        ">
+            <label for="restaurant"><i class="fas fa-utensils"></i> Ресторан</label>
+            <input type="text" id="restaurant" placeholder="Название ресторана" style="
+                width: 100%;
+                padding: 8px;
+                border: 1px solid #ddd;
+                border-radius: 3px;
+                margin-top: 5px;
+            ">
+        </div>
+        
+        <div class="filter-group" style="
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        ">
+            <label for="address"><i class="fas fa-map-marker-alt"></i> Адрес</label>
+            <input type="text" id="address" placeholder="Адрес заведения" style="
+                width: 100%;
+                padding: 8px;
+                border: 1px solid #ddd;
+                border-radius: 3px;
+                margin-top: 5px;
+            ">
+        </div>
+        
+        <div class="filter-group" style="
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        ">
+            <label for="phone"><i class="fas fa-phone"></i> Телефон</label>
+            <input type="text" id="phone" placeholder="Номер телефона" style="
+                width: 100%;
+                padding: 8px;
+                border: 1px solid #ddd;
+                border-radius: 3px;
+                margin-top: 5px;
+            ">
+        </div>
+        
+        <div class="filter-group" style="
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        ">
+            <label for="salad-name"><i class="fas fa-salad"></i> Салат</label>
+            <input type="text" id="salad-name" placeholder="Название салата" style="
+                width: 100%;
+                padding: 8px;
+                border: 1px solid #ddd;
+                border-radius: 3px;
+                margin-top: 5px;
+            ">
+        </div>
+    </div>
+    
+    <button id="reset-filters" class="btn" style="
+        background: #4CAF50;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        transition: all 0.3s;
+    ">
+        <i class="fas fa-redo"></i> Сбросить фильтры
+    </button>
+</section>
+
+            <section class="salads">
+                <div id="salads-container" class="salads-container">
+                    <!-- Карточка 1 -->
+                    <div class="salad-card" data-restaurant="Итальянский дворик" data-address="ул. Пушкинская, 15, Барнаул" data-phone="+7 (123) 456-78-90" data-name="Классический Цезарь">
+                        <img src="photo_2025-06-29_15-52-37.jpg" alt="Классический Цезарь" class="salad-image">
+                        <div class="salad-info">
+                            <h3>Классический Цезарь</h3>
+                             <p style="font-weight: bold;">Итальянский дворик</p>
+                            <button class="btn order-btn" data-salad='{"id":1,"name":"Классический Цезарь","restaurant":"Итальянский дворик","address":"ул. Пушкинская, 15, Барнаул","phone":"+7 (123) 456-78-90","image":"https://avatars.mds.yandex.net/get-entity_search/1987348/1174361991/S600xU_2x","coords":[53.356,83.768],"calories":250,"protein":15,"carbs":12,"fat":18}'>
+                                <i class="fas fa-shopping-cart"></i> Заказать
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Карточка 2 -->
+                    <div class="salad-card" data-restaurant="Гриль Хаус" data-address="пр. Ленина, 42, Барнаул" data-phone="+7 (987) 654-32-10" data-name="Пикантный Цезарь с хреном">
+                        <img src="maxresdefault.jpg" alt="Пикантный Цезарь с хреном" class="salad-image">
+                        <div class="salad-info">
+                            <h3>Пикантный Цезарь с хреном</h3>
+                            <p style="font-weight: bold;">Гриль Хаус</p>
+                            <button class="btn order-btn" data-salad='{"id":2,"name":"Пикантный Цезарь с хреном","restaurant":"Гриль Хаус","address":"пр. Ленина, 42, Барнаул","phone":"+7 (987) 654-32-10","image":"https://i.ytimg.com/vi/9qnmwku8ukA/maxresdefault.jpg","coords":[53.354,83.769],"calories":280,"protein":16,"carbs":14,"fat":20}'>
+                                <i class="fas fa-shopping-cart"></i> Заказать
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Карточка 3 -->
+                    <div class="salad-card" data-restaurant="Моремания" data-address="ул. Морская, 5, Барнаул" data-phone="+7 (555) 123-45-67" data-name="Цезарь с креветками">
+                        <img src="photo_2025-06-29_15-54-06.jpg" alt="Цезарь с креветками" class="salad-image">
+                        <div class="salad-info">
+                            <h3>Цезарь с креветками</h3>
+                            <p style="font-weight: bold;">Моремания</p>
+                            <button class="btn order-btn" data-salad='{"id":3,"name":"Цезарь с креветками","restaurant":"Моремания","address":"ул. Морская, 5, Барнаул","phone":"+7 (555) 123-45-67","image":"https://main-cdn.sbermegamarket.ru/big1/hlr-system/-14/891/842/101/311/112/100063995625b0.png","coords":[53.353,83.772],"calories":220,"protein":18,"carbs":10,"fat":15}'>
+                                <i class="fas fa-shopping-cart"></i> Заказать
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Карточка 4 -->
+                    <div class="salad-card" data-restaurant="Зеленый лист" data-address="ул. Садовая, 33, Барнаул" data-phone="+7 (333) 222-11-00" data-name="Вегетарианский Цезарь">
+                        <img src="739945c9252a58d0d276e432a588b81e.jpg" alt="Вегетарианский Цезарь" class="salad-image">
+                        <div class="salad-info">
+                            <h3>Вегетарианский Цезарь</h3>
+                            <p style="font-weight: bold;">Зеленый лист</p>
+                            <button class="btn order-btn" data-salad='{"id":4,"name":"Вегетарианский Цезарь","restaurant":"Зеленый лист","address":"ул. Садовая, 33, Барнаул","phone":"+7 (333) 222-11-00","image":"https://i.pinimg.com/736x/73/99/45/739945c9252a58d0d276e432a588b81e.jpg","coords":[53.358,83.771],"calories":180,"protein":12,"carbs":15,"fat":10}'>
+                                <i class="fas fa-shopping-cart"></i> Заказать
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Карточка 5 -->
+                    <div class="salad-card" data-restaurant="Мясной клуб" data-address="ул. Грильная, 7, Барнаул" data-phone="+7 (777) 888-99-00" data-name="Цезарь с курицей и беконом">
+                        <img src="foto-3860-10.jpg" alt="Цезарь с курицей и беконом" class="salad-image">
+                        <div class="salad-info">
+                            <h3>Цезарь с курицей и беконом</h3>
+                            <p style="font-weight: bold;">Мясной клуб</p>
+                            <button class="btn order-btn" data-salad='{"id":5,"name":"Цезарь с курицей и беконом","restaurant":"Мясной клуб","address":"ул. Грильная, 7, Барнаул","phone":"+7 (777) 888-99-00","image":"https://lafoy.ru/photo_l/foto-3860-10.jpg","coords":[53.355,83.774],"calories":320,"protein":20,"carbs":12,"fat":22}'>
+                                <i class="fas fa-shopping-cart"></i> Заказать
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Карточка 6 -->
+                    <div class="salad-card" data-restaurant="Гастрономик" data-address="пр. Гурманов, 12, Барнаул" data-phone="+7 (444) 555-66-77" data-name="Фирменный Цезарь шеф-повара">
+                        <img src="photo_2025-06-29_15-55-18.jpg" alt="Фирменный Цезарь шеф-повара" class="salad-image">
+                        <div class="salad-info">
+                            <h3>Фирменный Цезарь шеф-повара</h3>
+                            <p style="font-weight: bold;">Гастрономик</p>
+                            <button class="btn order-btn" data-salad='{"id":6,"name":"Фирменный Цезарь шеф-повара","restaurant":"Гастрономик","address":"пр. Гурманов, 12, Барнаул","phone":"+7 (444) 555-66-77","image":"https://avatars.mds.yandex.net/get-altay/200322/2a0000015b1ff871ec2cf221324b64012664/XXL_height","coords":[53.352,83.766],"calories":300,"protein":17,"carbs":13,"fat":21}'>
+                                <i class="fas fa-shopping-cart"></i> Заказать
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="no-results" class="no-results" style="display: none;">
+                    <i class="fas fa-search"></i>
+                    <p>Ничего не найдено. Попробуйте изменить параметры фильтрации.</p>
+                </div>
+                <div id="loading" class="loading" style="display: none;">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Загрузка данных...</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+   <footer class="footer">
+    <div class="container">
+        <p>© 2025 Каталог салатов Цезарь. Все права защищены.</p>
+    </div>
+</footer>
+
+    <!-- Модальное окно для заказа -->
+    <div id="order-modal" class="modal-overlay">
+        <div class="modal">
+            <button class="close-modal">&times;</button>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <img id="modal-salad-image" src="" alt="Салат" class="salad-image">
+                    <div class="nutrition-info">
+                        <div class="nutrition-item">
+                            <div class="nutrition-value" id="modal-calories">0 ккал</div>
+                            <div class="nutrition-label">Калории</div>
+                        </div>
+                        <div class="nutrition-item">
+                            <div class="nutrition-value" id="modal-protein">0г</div>
+                            <div class="nutrition-label">Белки</div>
+                        </div>
+                        <div class="nutrition-item">
+                            <div class="nutrition-value" id="modal-carbs">0г</div>
+                            <div class="nutrition-label">Углеводы</div>
+                        </div>
+                        <div class="nutrition-item">
+                            <div class="nutrition-value" id="modal-fat">0г</div>
+                            <div class="nutrition-label">Жиры</div>
+                        </div>
+                    </div>
+                    <h2 id="modal-salad-name">Название салата</h2>
+                    <p id="modal-restaurant-name">Ресторан</p>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <h3><i class="fas fa-map-marker-alt"></i> Адрес</h3>
+                        <p id="modal-restaurant-address">Адрес ресторана</p>
+                        <div id="salad-map"></div>
+                    </div>
+                    <div>
+                        <h3><i class="fas fa-utensils"></i> Заказ</h3>
+                        <form class="order-form">
+                            <div class="form-group">
+                                <label for="order-name">Ваше имя</label>
+                                <input type="text" id="order-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="order-phone">Телефон</label>
+                                <input type="tel" id="order-phone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="order-quantity">Количество</label>
+                                <select id="order-quantity">
+                                    <option value="1">1 порция</option>
+                                    <option value="2">2 порции</option>
+                                    <option value="3">3 порции</option>
+                                    <option value="4">4 порции</option>
+                                    <option value="5">5 порций</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="order-comments">Комментарии к заказу</label>
+                                <textarea id="order-comments" rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="order-btn">Заказать</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подключаем API Яндекс.Карт -->
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=ваш_api_ключ&lang=ru_RU" type="text/javascript"></script>
+    
+    <script>
+        // Данные о салатах
+        const saladsData = [
+            {
+                id: 1,
+                name: "Классический Цезарь",
+                restaurant: "Итальянский дворик",
+                address: "ул. Пушкинская, 15, Барнаул",
+                phone: "+7 (123) 456-78-90",
+                image: "https://avatars.mds.yandex.net/get-entity_search/1987348/1174361991/S600xU_2x",
+                coords: [53.356,83.768],
+                calories: 250,
+                protein: 15,
+                carbs: 12,
+                fat: 18
+            },
+            {
+                id: 2,
+                name: "Пикантный Цезарь с хреном",
+                restaurant: "Гриль Хаус",
+                address: "пр. Ленина, 42, Барнаул",
+                phone: "+7 (987) 654-32-10",
+                image: "https://i.ytimg.com/vi/9qnmwku8ukA/maxresdefault.jpg",
+                coords: [53.354,83.769],
+                calories: 280,
+                protein: 16,
+                carbs: 14,
+                fat: 20
+            },
+            {
+                id: 3,
+                name: "Цезарь с креветками",
+                restaurant: "Моремания",
+                address: "ул. Морская, 5, Барнаул",
+                phone: "+7 (555) 123-45-67",
+                image: "https://main-cdn.sbermegamarket.ru/big1/hlr-system/-14/891/842/101/311/112/100063995625b0.png",
+                coords: [53.353,83.772],
+                calories: 220,
+                protein: 18,
+                carbs: 10,
+                fat: 15
+            },
+            {
+                id: 4,
+                name: "Вегетарианский Цезарь",
+                restaurant: "Зеленый лист",
+                address: "ул. Садовая, 33, Барнаул",
+                phone: "+7 (333) 222-11-00",
+                image: "https://i.pinimg.com/736x/73/99/45/739945c9252a58d0d276e432a588b81e.jpg",
+                coords: [53.358,83.771],
+                calories: 180,
+                protein: 12,
+                carbs: 15,
+                fat: 10
+            },
+            {
+                id: 5,
+                name: "Цезарь с курицей и беконом",
+                restaurant: "Мясной клуб",
+                address: "ул. Грильная, 7, Барнаул",
+                phone: "+7 (777) 888-99-00",
+                image: "https://lafoy.ru/photo_l/foto-3860-10.jpg",
+                coords: [53.355,83.774],
+                calories: 320,
+                protein: 20,
+                carbs: 12,
+                fat: 22
+            },
+            {
+                id: 6,
+                name: "Фирменный Цезарь шеф-повара",
+                restaurant: "Гастрономик",
+                address: "пр. Гурманов, 12, Барнаул",
+                phone: "+7 (444) 555-66-77",
+                image: "https://avatars.mds.yandex.net/get-altay/200322/2a0000015b1ff871ec2cf221324b64012664/XXL_height",
+                coords: [53.352,83.766],
+                calories: 300,
+                protein: 17,
+                carbs: 13,
+                fat: 21
+            }
+        ];
+
+        // Функция для отображения времени в Барнауле (GMT+7)
+        function updateBarnaulTime() {
+            const options = {
+                timeZone: 'Asia/Barnaul',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                weekday: 'long',
+                hour12: false
+            };
+            
+            const formatter = new Intl.DateTimeFormat('ru-RU', options);
+            const parts = formatter.formatToParts(new Date());
+            
+            let time = {}, date = {};
+            parts.forEach(part => {
+                if (part.type === 'hour' || part.type === 'minute' || part.type === 'second') {
+                    time[part.type] = part.value;
+                } else if (part.type !== 'literal') {
+                    date[part.type] = part.value;
+                }
+            });
+            
+            const timeString = `${time.hour}:${time.minute}:${time.second}`;
+            const dateString = `${date.weekday}, ${date.day}.${date.month}.${date.year}`;
+            
+            document.getElementById('barnaul-time').innerHTML = `
+                <strong>${timeString}</strong><br>
+                <small>${dateString}</small>
+            `;
+        }
+        
+        // Обновляем время каждую секунду
+        updateBarnaulTime();
+        setInterval(updateBarnaulTime, 1000);
+
+        // Функция для фильтрации салатов
+        function filterSalads() {
+            const restaurantFilter = document.getElementById('restaurant').value.toLowerCase();
+            const addressFilter = document.getElementById('address').value.toLowerCase();
+            const phoneFilter = document.getElementById('phone').value.toLowerCase();
+            const nameFilter = document.getElementById('salad-name').value.toLowerCase();
+            
+            const saladCards = document.querySelectorAll('.salad-card');
+            let hasResults = false;
+            
+            saladCards.forEach(card => {
+                const restaurant = card.getAttribute('data-restaurant').toLowerCase();
+                const address = card.getAttribute('data-address').toLowerCase();
+                const phone = card.getAttribute('data-phone').toLowerCase();
+                const name = card.getAttribute('data-name').toLowerCase();
+                
+                const matchesRestaurant = restaurant.includes(restaurantFilter);
+                const matchesAddress = address.includes(addressFilter);
+                const matchesPhone = phone.includes(phoneFilter);
+                const matchesName = name.includes(nameFilter);
+                
+                if (matchesRestaurant && matchesAddress && matchesPhone && matchesName) {
+                    card.style.display = 'block';
+                    hasResults = true;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Показываем сообщение, если ничего не найдено
+            const noResults = document.getElementById('no-results');
+            if (hasResults) {
+                noResults.style.display = 'none';
+            } else {
+                noResults.style.display = 'block';
+            }
+        }
+        
+        // Функция для сброса фильтров
+        function resetFilters() {
+            document.getElementById('restaurant').value = '';
+            document.getElementById('address').value = '';
+            document.getElementById('phone').value = '';
+            document.getElementById('salad-name').value = '';
+            
+            const saladCards = document.querySelectorAll('.salad-card');
+            saladCards.forEach(card => {
+                card.style.display = 'block';
+            });
+            
+            document.getElementById('no-results').style.display = 'none';
+        }
+        
+        // Функция для открытия модального окна с данными салата
+        function openOrderModal(saladData) {
+            const modal = document.getElementById('order-modal');
+            
+            // Заполняем данные
+            document.getElementById('modal-salad-name').textContent = saladData.name;
+            document.getElementById('modal-restaurant-name').textContent = saladData.restaurant;
+            document.getElementById('modal-restaurant-address').textContent = saladData.address;
+            document.getElementById('modal-salad-image').src = saladData.image;
+            document.getElementById('modal-salad-image').alt = saladData.name;
+            
+            // Заполняем данные о питательной ценности
+            document.getElementById('modal-calories').textContent = saladData.calories + ' ккал';
+            document.getElementById('modal-protein').textContent = saladData.protein + 'г';
+            document.getElementById('modal-carbs').textContent = saladData.carbs + 'г';
+            document.getElementById('modal-fat').textContent = saladData.fat + 'г';
+            
+            // Инициализируем карту
+            if (typeof ymaps !== 'undefined') {
+                ymaps.ready(function() {
+                    // Удаляем старую карту, если есть
+                    if (window.saladMap) {
+                        window.saladMap.destroy();
+                    }
+                    
+                    // Создаем новую карту
+                    window.saladMap = new ymaps.Map('salad-map', {
+                        center: saladData.coords,
+                        zoom: 15
+                    });
+                    
+                    // Добавляем метку
+                    const placemark = new ymaps.Placemark(saladData.coords, {
+                        hintContent: saladData.restaurant,
+                        balloonContent: saladData.address
+                    });
+                    
+                    window.saladMap.geoObjects.add(placemark);
+                });
+            }
+            
+            // Показываем модальное окно
+            modal.style.display = 'flex';
+        }
+        
+        // Закрытие модального окна
+        function closeOrderModal() {
+            document.getElementById('order-modal').style.display = 'none';
+        }
+        
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Навешиваем обработчики на фильтры
+            document.getElementById('restaurant').addEventListener('input', filterSalads);
+            document.getElementById('address').addEventListener('input', filterSalads);
+            document.getElementById('phone').addEventListener('input', filterSalads);
+            document.getElementById('salad-name').addEventListener('input', filterSalads);
+            
+            // Обработчик кнопки сброса фильтров
+            document.getElementById('reset-filters').addEventListener('click', resetFilters);
+            
+            // Обработчик клика по кнопке заказа
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.order-btn')) {
+                    const btn = e.target.closest('.order-btn');
+                    const saladData = JSON.parse(btn.getAttribute('data-salad'));
+                    openOrderModal(saladData);
+                }
+            });
+            
+            // Обработчик отправки формы заказа
+            document.querySelector('.order-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('order-name').value;
+                const phone = document.getElementById('order-phone').value;
+                const quantity = document.getElementById('order-quantity').value;
+                const comments = document.getElementById('order-comments').value;
+                const saladName = document.getElementById('modal-salad-name').textContent;
+                const restaurant = document.getElementById('modal-restaurant-name').textContent;
+                
+                // Здесь можно добавить отправку данных на сервер
+                console.log('Заказ:', {
+                    saladName,
+                    restaurant,
+                    name,
+                    phone,
+                    quantity,
+                    comments
+                });
+                
+                alert('Ваш заказ принят! С вами свяжутся для подтверждения.');
+                closeOrderModal();
+            });
+            
+            // Закрытие модального окна по кнопке
+            document.querySelector('.close-modal').addEventListener('click', closeOrderModal);
+            
+            // Закрытие модального окна при клике вне его
+            document.getElementById('order-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeOrderModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
