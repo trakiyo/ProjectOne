@@ -170,3 +170,56 @@ document.addEventListener('DOMContentLoaded', function() {
         resetFiltersBtn.addEventListener('click', resetFilters);
     }
 });
+// Функция для вращения рулетки
+function spinRoulette() {
+    const wheel = document.getElementById('roulette-wheel');
+    const spinBtn = document.getElementById('spin-btn');
+    const result = document.getElementById('discount-result');
+    const discountValue = document.getElementById('discount-value');
+    const discountCode = document.getElementById('discount-code');
+    
+    // Отключаем кнопку на время вращения
+    spinBtn.disabled = true;
+    
+    // Скрываем предыдущий результат
+    result.style.display = 'none';
+    
+    // Определяем сектора и соответствующие скидки
+    const sections = 10; // 10 секторов на рулетке
+    const sectionAngle = 360 / sections; // 36 градусов на сектор
+    const discounts = [10, 20, 30, 40, 50, 10, 20, 30, 40, 50]; // Скидки для каждого сектора
+    
+    // Выбираем случайный сектор (0-9) и соответствующую скидку
+    const winningSection = Math.floor(Math.random() * sections);
+    const discount = discounts[winningSection];
+    
+    // Вычисляем угол для выбранного сектора (центр сектора)
+    const targetAngle = winningSection * sectionAngle + sectionAngle / 2;
+    
+    // Количество полных оборотов (3-5)
+    const spins = 3 + Math.floor(Math.random() * 3);
+    
+    // Конечный угол с учетом оборотов и выбранного сектора
+    // Вычитаем 90 градусов, так как начальное положение указателя сверху
+    const finalAngle = spins * 360 + targetAngle - 90;
+    
+    // Вращаем рулетку
+    wheel.style.transform = `rotate(${-finalAngle}deg)`;
+    wheel.style.transition = 'transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
+    
+    // После завершения вращения показываем результат
+    setTimeout(() => {
+        discountValue.textContent = `${discount}%`;
+        
+        // Генерируем случайный промокод
+        const code = `CAESAR-${Math.floor(1000 + Math.random() * 9000)}`;
+        discountCode.textContent = code;
+        
+        // Показываем результат
+        result.style.display = 'block';
+        
+        // Сохраняем промокод в localStorage
+        localStorage.setItem('discountCode', code);
+        localStorage.setItem('discountValue', discount);
+    }, 3000);
+}
